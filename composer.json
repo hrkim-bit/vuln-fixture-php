@@ -1,0 +1,13 @@
+{
+    "name": "ivas/vuln-fixture-php",
+    "description": "Intentionally vulnerable PHP fixture for IVAS QA.",
+    "require": {
+        "php": ">=7.0",
+        "monolog/monolog": "1.11.0",
+        "guzzlehttp/guzzle": "6.2.0",
+        "twig/twig": "1.20.0",
+        "symfony/http-kernel": "2.8.0",
+        "phpmailer/phpmailer": "5.2.20",
+        "league/flysystem": "1.0.0"
+    }
+}
