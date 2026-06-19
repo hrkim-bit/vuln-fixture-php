@@ -12,49 +12,77 @@ const AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
 
 $mysqli = @new mysqli("db.internal", "admin", DB_PASSWORD, "prod");
 
+function handle_user($mysqli) {
+    $id = $_GET['id'] ?? '';
+    $res = $mysqli->query("SELECT * FROM users WHERE id = " . $id);
+    while ($row = $res->fetch_assoc()) {
+        print_r($row);
+    }
+}
+
+function handle_ping() {
+    $host = $_GET['host'] ?? 'localhost';
+    system("ping -c 1 " . $host);
+}
+
+function handle_file() {
+    $name = $_GET['name'] ?? '';
+    echo file_get_contents("/var/data/" . $name);
+}
+
+function handle_load() {
+    $data = $_GET['data'] ?? '';
+    $obj = unserialize($data);
+    var_dump($obj);
+}
+
+function handle_fetch() {
+    $url = $_GET['url'] ?? '';
+    echo file_get_contents($url);
+}
+
+function handle_hash() {
+    $pw = $_GET['pw'] ?? '';
+    echo md5($pw);
+}
+
+function handle_extract() {
+    $path = $_GET['path'] ?? '';
+    echo extract_archive($path);
+}
+
+function handle_utils_hash() {
+    $pw = $_GET['pw'] ?? '';
+    echo insecure_hash($pw);
+}
+
 $route = $_GET['r'] ?? 'home';
 
 switch ($route) {
-    // SQL Injection
     case 'user':
-        $id = $_GET['id'] ?? '';
-        $res = $mysqli->query("SELECT * FROM users WHERE id = " . $id);
-        while ($row = $res->fetch_assoc()) {
-            print_r($row);
-        }
+        handle_user($mysqli);
         break;
-
-    // Command Injection
     case 'ping':
-        $host = $_GET['host'] ?? 'localhost';
-        system("ping -c 1 " . $host);
+        handle_ping();
         break;
-
-    // Path Traversal / LFI
     case 'file':
-        $name = $_GET['name'] ?? '';
-        echo file_get_contents("/var/data/" . $name);
+        handle_file();
         break;
-
-    // Object deserialization
     case 'load':
-        $data = $_GET['data'] ?? '';
-        $obj = unserialize($data);
-        var_dump($obj);
+        handle_load();
         break;
-
-    // SSRF
     case 'fetch':
-        $url = $_GET['url'] ?? '';
-        echo file_get_contents($url);
+        handle_fetch();
         break;
-
-    // Weak hash
     case 'hash':
-        $pw = $_GET['pw'] ?? '';
-        echo md5($pw);
+        handle_hash();
         break;
-
+    case 'extract':
+        handle_extract();
+        break;
+    case 'utils-hash':
+        handle_utils_hash();
+        break;
     default:
         echo "vuln-fixture-php";
 }
